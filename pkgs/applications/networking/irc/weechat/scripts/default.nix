@@ -11,6 +11,8 @@
     inherit (luaPackages) cjson;
   };
 
+  weechat-text-item = callPackage ./weechat-text-item { };
+
   weechat-xmpp = callPackage ./weechat-xmpp {
     inherit (pythonPackages) pydns;
   };
