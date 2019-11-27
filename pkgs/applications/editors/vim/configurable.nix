@@ -1,7 +1,8 @@
 # TODO tidy up eg The patchelf code is patching gvim even if you don't build it..
 # but I have gvim with python support now :) - Marc
 { source ? "default", callPackage, stdenv, ncurses, pkgconfig, gettext
-, writeText, config, glib, gtk2-x11, gtk3-x11, lua, python, perl, tcl, ruby
+, writeText, config, glib, gtk2-x11, gtk3-x11
+, lua, python, perl, tcl, racket, ruby
 , libX11, libXext, libSM, libXpm, libXt, libXaw, libXau, libXmu
 , libICE
 , vimPlugins
@@ -18,6 +19,7 @@
 , luaSupport        ? config.vim.lua or true
 , perlSupport       ? config.vim.perl or false      # Perl interpreter
 , pythonSupport     ? config.vim.python or true     # Python interpreter
+, racketSupport     ? config.vim.racket or true     # Racket (MzScheme) interpreter
 , rubySupport       ? config.vim.ruby or true       # Ruby interpreter
 , nlsSupport        ? config.vim.nls or false       # Enable NLS (gettext())
 , tclSupport        ? config.vim.tcl or false       # Include Tcl interpreter
@@ -110,6 +112,10 @@ in stdenv.mkDerivation rec {
     "--with-python${if isPython3 then "3" else ""}-config-dir=${python}/lib"
     "--disable-python${if (!isPython3) then "3" else ""}interp"
   ]
+  ++ stdenv.lib.optionals racketSupport [
+    "--with-plthome=${racket}"
+    "--enable-mzschemeinterp"
+  ]
   ++ stdenv.lib.optional nlsSupport          "--enable-nls"
   ++ stdenv.lib.optional perlSupport         "--enable-perlinterp"
   ++ stdenv.lib.optional rubySupport         "--enable-rubyinterp"
@@ -136,6 +142,7 @@ in stdenv.mkDerivation rec {
     ++ stdenv.lib.optional luaSupport lua
     ++ stdenv.lib.optional pythonSupport python
     ++ stdenv.lib.optional tclSupport tcl
+    ++ stdenv.lib.optional racketSupport racket
     ++ stdenv.lib.optional rubySupport ruby;
 
   preConfigure = ''
